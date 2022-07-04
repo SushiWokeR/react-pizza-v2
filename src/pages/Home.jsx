@@ -1,28 +1,29 @@
 import React from 'react'
-
 import Categories from '../components/Categories';
 import Sort from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock';
 import Skeleton from '../components/PizzaBlock/Skeleton';
+import { SearchContext } from '../App';
 
 const Home = () => {
-
+  const {searchValue} = React.useContext(SearchContext)
     const [items, setItems] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
-  
     const [categoryId, setCategoryId] = React.useState(0)
     const [sortType, setSortType] = React.useState({
       name: 'популярности',
       sortProperty: 'rating'
     })
 
+
     React.useEffect(() => {
 
       const order = sortType.sortProperty.includes('-') ? 'asc' : 'desc';
       const sortBy = sortType.sortProperty.replace('-', '');
       const category = categoryId > 0 ? `category=${categoryId}` : '';
+      const search = searchValue ? `&search=${searchValue}` : '';
       setIsLoading(true)
-      fetch(`https://629d48923dda090f3c00036b.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}`)
+      fetch(`https://629d48923dda090f3c00036b.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}${search}`)
         .then((res) => {
           return res.json();
         })
@@ -31,8 +32,10 @@ const Home = () => {
           setIsLoading(false);
         });
         window.scrollTo(0,0)
-    }, [categoryId, sortType]);
+    }, [categoryId, sortType, searchValue]);
 
+    const pizzas = items.map((item) => <PizzaBlock key={item.id} {...item} />)
+    const skeleton = [...new Array(8)].map((_, index) => <Skeleton key={index} />)
   return (
     <>
               <div className="container">
@@ -42,9 +45,7 @@ const Home = () => {
                 </div>
                 <h2 className="content__title">Все пиццы</h2>
                 <div className="content__items">
-                  {isLoading
-                    ? [...new Array(8)].map((_, index) => <Skeleton key={index} />)
-                    : items.map((item) => <PizzaBlock key={item.id} {...item} />)}
+                  {isLoading ? skeleton : pizzas}
                 </div>
             </div>
     </>

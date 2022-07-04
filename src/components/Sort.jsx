@@ -11,7 +11,7 @@ const Sort = ({value, onClickSort}) => {
     {name:'алфавиту',  sortProperty: 'title'},
     {name:'алфавиту1',  sortProperty: '-title'},
   ]
- 
+ //TODO: Сделать изменение типа сорировки по повторному нажатию на неё
   
   const onClickSortList = (index) => {
     onClickSort(index)
